@@ -42,8 +42,8 @@ CENTER_COST_OPTIONS = [
 REVENDAS_OPTIONS = [
     "Revalle Juazeiro",
     "Revalle Bonfim",
-    "Revalle Pernambuco",
-    "Revalle Nordeste",
+    "Revalle Petrolina",
+    "Revalle Ribeira",
     "Revalle Paulo Afonso",
     "Revalle Alagoinhas",
     "Revalle Serrinha"
@@ -52,8 +52,8 @@ REVENDAS_OPTIONS = [
 TERMO_MODELOS = {
     "Revalle Juazeiro": "modelos/termo_juazeiro.docx",
     "Revalle Bonfim": "modelos/termo_bonfim.docx",
-    "Revalle Pernambuco": "modelos/termo_pernambuco.docx",
-    "Revalle Nordeste": "modelos/termo_nordeste.docx",
+    "Revalle Petrolina": "modelos/termo_petrolina.docx",
+    "Revalle Ribeira": "modelos/termo_ribeira.docx",
     "Revalle Paulo Afonso": "modelos/termo_pauloafonso.docx",
     "Revalle Alagoinhas": "modelos/termo_alagoinhas.docx",
     "Revalle Serrinha": "modelos/termo_serrinha.docx",
@@ -1253,13 +1253,28 @@ class App(tk.Tk):
         sel = self.cb_issue.get()
         user = self.e_issue_user.get().strip()
         cpf = self.e_issue_cpf.get().strip()
-        cc, cargo, revenda, date_issue = (
-            self.cb_center.get().strip(), self.e_cargo.get().strip(),
-            self.cb_revenda.get().strip(), self.e_date_issue.get().strip()
-        )
+        cc = self.cb_center.get().strip()
+        cargo = self.e_cargo.get().strip()
+        revenda = self.cb_revenda.get().strip()
+        date_issue = self.e_date_issue.get().strip()
+
+
         if not (sel and user and cc and cargo and revenda and date_issue):
-            self.lbl_issue.config(text="Preencha todos os campos de empréstimo.", foreground='red')
+            self.lbl_issue.config(
+                text="Preencha todos os campos de empréstimo.",
+                foreground="red"
+            )
             return
+
+        # 🔹 validação do CPF
+        cpf_digits = "".join(filter(str.isdigit, cpf))
+        if len(cpf_digits) < 11:
+            self.lbl_issue.config(
+                text="CPF inválido. Informe os 11 dígitos.",
+                foreground="red"
+            )
+            return
+
         pid, _ = sel.split(' - ', 1)
         pid = int(pid)
         ok, msg = self.inv.issue(pid, user, cpf, cc, cargo, revenda, date_issue)
